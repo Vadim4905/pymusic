@@ -1,0 +1,40 @@
+{% include "home/base.html"%}
+
+
+{% block content %}
+
+<h1>{{album.name}} by <a href='{% url "artist_detail" album.artist.pk %}' >{{album.artist.name}}</a></h1>
+
+<br>
+<a href='{% url "music_create" pk=album.pk %}'>Add new music</a>
+
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">title</th>
+        <th scope="col">created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for music in musics %}
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td>
+            <audio controls>
+                <source src="{{ music.track.url }}" type="audio/mpeg">
+            </audio>
+            {{music.name}}
+        </td>
+        <td>{{music.created.year}}</td>
+      </tr>
+{% endfor %}
+    </tbody>
+  </table>
+
+
+
+
+
+{% endblock %}

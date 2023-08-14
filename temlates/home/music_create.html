@@ -1,0 +1,29 @@
+{% include "home/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<script src="{% url 'js-catlog' %}"></script>
+<script src="{% static '/admin/js/core.js' %}"></script>
+<link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
+<link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}">
+
+<div class="container d-flex justify-content-center align-items-center">
+<form action='' method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {#{{ form|crispy }}#}
+    {{form.media}}
+    <!-- {{ form.as_p }} -->
+    {% for f in form %}
+    <div class="mb-3">
+        <label for="disabledTextInput" class="form-label">{{f.label}}</label>
+        <div class="form-control">{{f}}</div>
+      </div>
+    <br>
+    {% endfor %}
+    <br>
+    <input class="btn btn-primary" type="submit">
+</form>
+</div>
+{% endblock %}

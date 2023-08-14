@@ -1,0 +1,25 @@
+{% include "home/base.html"%}
+
+
+{% block content %}
+
+<h1>{{artist.name}}</h1>
+<br>
+<a href='{% url "album_create" pk=artist.pk %}'>Add new album</a>
+
+<div class="container d-flex justify-content-center align-items-center">
+{% for album in albums %}
+
+<div class="card" style="width: 18rem;">
+    <img src="{{album.cover.url}}" class="card-img-top" alt="...">
+    <a href="{% url 'album_detail' album.pk %}" ></a>
+    <div class="card-body">
+      <p class="card-text"><a href="{% url 'album_detail' album.pk %}" >{{album.name}}</a></p>
+    </div>
+  </div>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}
