@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 
+from home import models,forms
+
 from django.views.generic import CreateView, View
 from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth import login, logout
 from django.http import HttpResponse
-
-
+from django.views.generic import ListView, CreateView,DetailView
+from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 
 from pymusic import settings
@@ -28,6 +30,17 @@ class RegisterView(CreateView):
 class CustomLoginView(LoginView):
     template_name = "users/login.html"
     form_class = AuthenticationForm
+
+class ProfileView(DetailView):
+    template_name = 'users/profile.html'
+    model = get_user_model()
+
+    def get_context_data(self,*args,**kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Profile'
+        if self.request.user.is_authenticated:
+            context['user_playlists'] = models.Playlist.objects.filter(user=self.request.user)
+        return context
 
 
 # class CustomLogoutView(LogoutView):

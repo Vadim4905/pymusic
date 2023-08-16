@@ -6,6 +6,7 @@
 
 <h1>All musics</h1>
 
+
 <a href="{% url 'playlist_create' %}" > Add own playlist </a>
     <table class="table">
         <thead>
@@ -36,9 +37,10 @@
                 ...
               </button>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
+
+                {% for playlist in user_playlists %} 
+                <li><a class="dropdown-item" href="{% url 'add_music_to_playlist' music.pk  playlist.pk %}">Add to {{playlist}}</a></li>
+                {% endfor %}
               </ul>
             </div>
 

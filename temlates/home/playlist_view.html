@@ -1,0 +1,11 @@
+{% include 'home/base.html' %}
+
+
+{% block content %}
+<h1>{{playlist.name}}</h1>
+
+{% for music in playlist.musics.all %}
+    {{music}}
+{% endfor %}
+
+{% endblock %}

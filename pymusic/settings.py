@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-tp$ea(0^-q(fip#qp8sdlfq)=c_o-n8kad^_9rm2m+k8%z$+(e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+X_FRAME_OPTIONS = '*'
 
 
 # Application definition
@@ -129,3 +130,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+LOGIN_REDIRECT_URL = '/'
+
+LOGOUT_REDIRECT_URL= '/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

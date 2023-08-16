@@ -1,0 +1,11 @@
+{% include 'home/base.html' %}
+
+
+{% block content %}
+<h1>{{user}}</h1>
+
+{% for playlist in user_playlists %}
+    <a href="{% url 'playlist_detail' playlist.pk  %}" >{{playlist}}</a>
+{% endfor %}
+
+{% endblock %}

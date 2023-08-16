@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView,DetailView
 from home import models,forms
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.contrib import messages
 # Create your views here.
 
 class IndexView(ListView):
@@ -12,12 +13,9 @@ class IndexView(ListView):
 
     def get_context_data(self,*args,**kwargs):
         context = super().get_context_data(**kwargs)
-        # context['title'] = 'Artist'
-        # # category = context['category']
-        # # products = Product.objects.filter(category=category)
-        # # context['products'] = products
-        # context['albums'] = models.Album.objects.filter(artist=kwargs['object'])
-        # # context['categories'] = Category.objects.all()
+        context['title'] = 'Index'
+        if self.request.user.is_authenticated:
+            context['user_playlists'] = models.Playlist.objects.filter(user=self.request.user)
         return context
 
 
@@ -99,7 +97,7 @@ class PlaylistCreateView(CreateView):
         playlist = form.save(commit=False)
         playlist.user = self.request.user
         playlist.save()
-        return redirect(to="/")
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/default/url/'))
 
 def add_music_to_playlist(request, music_id, playlist_id):
     music = get_object_or_404(models.Music, pk=music_id)
@@ -110,3 +108,8 @@ def add_music_to_playlist(request, music_id, playlist_id):
 
     messages.success(request, f'Added {music.name} to {playlist.name}!')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/default/url/'))
+
+class PlaylistView(DetailView):
+    template_name = "home/playlist_view.html"
+    model = models.Playlist
+    context_object_name = "playlist"
