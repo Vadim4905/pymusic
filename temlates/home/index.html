@@ -39,7 +39,13 @@
               <ul class="dropdown-menu">
 
                 {% for playlist in user_playlists %} 
-                <li><a class="dropdown-item" href="{% url 'add_music_to_playlist' music.pk  playlist.pk %}">Add to {{playlist}}</a></li>
+
+                    {% if music in playlist.musics.all %}
+                      <li><a class="dropdown-item" href="{% url 'remove_music_from_playlist' music.pk  playlist.pk %}">Remove from {{playlist}}</a></li>
+                    {% else %}
+                      <li><a class="dropdown-item" href="{% url 'add_music_to_playlist' music.pk  playlist.pk %}">Add to {{playlist}}</a></li>
+                    {% endif %}
+
                 {% endfor %}
               </ul>
             </div>

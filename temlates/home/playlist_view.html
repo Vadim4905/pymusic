@@ -4,8 +4,43 @@
 {% block content %}
 <h1>{{playlist.name}}</h1>
 
-{% for music in playlist.musics.all %}
-    {{music}}
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">title</th>
+        <th scope="col">created</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for music in playlist.musics.all %}
+      <tr>
+        <th scope="row">{{forloop.counter}}</th>
+        <td>
+            <audio controls>
+                <source src="{{ music.track.url }}" type="audio/mpeg">
+            </audio>
+            {{music.name}}
+        </td>
+        <td>{{music.created.year}}</td>
+        
+        <td>
+
+        <div class="dropdown"> 
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            ...
+        </button>   
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'remove_music_from_playlist' music.pk  playlist.pk %}">Remove</a></li>
+        </ul>
+        </div>
+
+        </td>
+
+      </tr>
 {% endfor %}
+    </tbody>
+  </table>
 
 {% endblock %}

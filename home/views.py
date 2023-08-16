@@ -109,6 +109,16 @@ def add_music_to_playlist(request, music_id, playlist_id):
     messages.success(request, f'Added {music.name} to {playlist.name}!')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/default/url/'))
 
+def remove_music_from_playlist(request, music_id, playlist_id):
+    music = get_object_or_404(models.Music, pk=music_id)
+    playlist = get_object_or_404(models.Playlist, pk=playlist_id)
+
+    # Remove music from playlist
+    playlist.musics.remove(music)
+
+    messages.success(request, f'Removed {music.name} from {playlist.name}!')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/default/url/'))
+
 class PlaylistView(DetailView):
     template_name = "home/playlist_view.html"
     model = models.Playlist
