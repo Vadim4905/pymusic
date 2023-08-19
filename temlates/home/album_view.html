@@ -4,10 +4,11 @@
 {% block content %}
 
 <h1>{{album.name}} by <a href='{% url "artist_detail" album.artist.pk %}' >{{album.artist.name}}</a></h1>
-
 <br>
-<a href='{% url "music_create" pk=album.pk %}'>Add new music</a>
 
+<a class="btn btn-primary" href='{% url "music_create" pk=album.pk %}'>
+  Add new track
+</a>
 
 <table class="table">
     <thead>

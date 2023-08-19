@@ -5,7 +5,10 @@
 
 <h1>All arists</h1>
 <br>
-<a href='{% url "artist_create" %}'>Add new artist</a>
+
+<a class="btn btn-primary" href="{%url 'artist_create'%}">
+  Add new artist
+</a>
 
 <div class="container d-flex justify-content-center align-items-center">
 {% for artist in artists %}

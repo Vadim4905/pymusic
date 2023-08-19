@@ -19,6 +19,7 @@ urlpatterns = [
     path('add_music_to_playlist/<uuid:music_id>/<uuid:playlist_id>/', views.add_music_to_playlist, name='add_music_to_playlist'),
     path('remove_music_from_playlist/<uuid:music_id>/<uuid:playlist_id>/', views.remove_music_from_playlist, name='remove_music_from_playlist'),
     path('playlist/<uuid:pk>',views.PlaylistView.as_view(),name='playlist_detail'),
+    path('search/', views.SearchResultsListView.as_view(), name='search_results'),
 
 
 ]

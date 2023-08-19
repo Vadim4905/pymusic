@@ -4,6 +4,7 @@ from home import models,forms
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.db.models import Q
 # Create your views here.
 
 class IndexView(ListView):
@@ -123,3 +124,12 @@ class PlaylistView(DetailView):
     template_name = "home/playlist_view.html"
     model = models.Playlist
     context_object_name = "playlist"
+
+class SearchResultsListView(ListView): 
+    model = models.Music
+    context_object_name = 'musics'
+    template_name = 'home/search_results.html'
+
+    def get_queryset(self): 
+        query = self.request.GET.get('q')
+        return models.Music.objects.filter(Q(name__icontains=query) | Q(name__icontains=query))

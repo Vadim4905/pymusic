@@ -4,7 +4,7 @@
 {% block content %}
 
 
-<h1>All musics</h1>
+<h1>Result</h1>
 
 
     <table class="table">
@@ -27,9 +27,6 @@
                     <source src="{{ music.track.url }}" type="audio/mpeg">
                 </audio>
                 {{music.name}} 
-                <br>
-                
-               
                 
             </td>
             <td><a href="{% url 'artist_detail' music.artist.pk %}">{{music.artist.name}}</a></td>
