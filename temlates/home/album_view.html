@@ -1,14 +1,17 @@
 {% include "home/base.html"%}
 
+{% load group_check %}
 
 {% block content %}
 
 <h1>{{album.name}} by <a href='{% url "artist_detail" album.artist.pk %}' >{{album.artist.name}}</a></h1>
 <br>
 
+{% if request.user|has_group:"admin" %}
 <a class="btn btn-primary" href='{% url "music_create" pk=album.pk %}'>
   Add new track
 </a>
+{% endif %}
 
 <table class="table">
     <thead>
@@ -16,6 +19,7 @@
         <th scope="col">#</th>
         <th scope="col">title</th>
         <th scope="col">created</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody>
@@ -29,6 +33,27 @@
             {{music.name}}
         </td>
         <td>{{music.created.year}}</td>
+
+        <td>
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            ...
+          </button>
+          <ul class="dropdown-menu">
+
+            {% for playlist in user_playlists %} 
+
+                {% if music in playlist.musics.all %}
+                  <li><a class="dropdown-item" href="{% url 'remove_music_from_playlist' music.pk  playlist.pk %}">Remove from {{playlist}}</a></li>
+                {% else %}
+                  <li><a class="dropdown-item" href="{% url 'add_music_to_playlist' music.pk  playlist.pk %}">Add to {{playlist}}</a></li>
+                {% endif %}
+
+            {% endfor %}
+          </ul>
+        </div>
+        </td>
+
       </tr>
 {% endfor %}
     </tbody>

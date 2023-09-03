@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 
 from home import models,forms
 
+from .forms import  CustomUserCreationForm
+
 from django.views.generic import CreateView, View
 from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
@@ -19,9 +21,9 @@ import ssl
 
 class RegisterView(CreateView):
     template_name = "users/register.html"
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     
-    def form_valid(self, form: UserCreationForm):
+    def form_valid(self, form: CustomUserCreationForm):
         user = form.save()
         login(self.request, user)
         return redirect("/")
@@ -43,13 +45,10 @@ class ProfileView(DetailView):
         return context
 
 
-# class CustomLogoutView(LogoutView):
-#     template_name = 
 
 
-# def user_exit(request):
-#     logout(request)
-#     return redirect("/")
+
+
 
 
 # class SendEmail(View):

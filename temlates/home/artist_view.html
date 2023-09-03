@@ -1,14 +1,17 @@
 {% include "home/base.html"%}
 
+{% load group_check %}
 
 {% block content %}
 
 <h1>{{artist.name}}</h1>
 <br>
 
+{% if request.user|has_group:"admin" %}
 <a class="btn btn-primary" href='{% url "album_create" pk=artist.pk %}'>
   Add new album
 </a>
+{% endif %}
 
 <div class="container d-flex justify-content-center align-items-center">
 {% for album in albums %}

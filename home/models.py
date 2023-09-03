@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 import uuid
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -23,6 +25,7 @@ class Album(models.Model):
 
     def __str__(self):
         return self.name
+        
 
 class Music(models.Model):
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
@@ -48,5 +51,20 @@ class Playlist(models.Model):
     def __str__(self):
         return self.name
 
+
+@receiver(post_delete, sender=Album)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.cover:
+        instance.cover.delete(save=False)
+
+@receiver(post_delete, sender=Artist)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.photo:
+        instance.photo.delete(save=False)
+
+@receiver(post_delete, sender=Music)
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if instance.track:
+        instance.track.delete(save=False)
 
 

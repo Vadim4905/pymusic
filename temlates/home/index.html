@@ -7,6 +7,13 @@
 <h1>All musics</h1>
 
 
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#PlaylistModal">
+  Add playlist
+</button>
+
+{% include 'home/playlist_create.html' %}
+
+
     <table class="table">
         <thead>
           <tr>
@@ -23,11 +30,13 @@
           <tr>
             <th scope="row">{{forloop.counter}}</th>
             <td>
-                <audio controls>
+                <audio controls >
                     <source src="{{ music.track.url }}" type="audio/mpeg">
                 </audio>
+               
+                
                 {{music.name}} 
-                <br>
+
                 
                
                 

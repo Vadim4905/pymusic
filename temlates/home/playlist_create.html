@@ -1,22 +1,20 @@
-{% include "home/base.html"%}
 
-
-
-{% block content %}
-<div class="container d-flex justify-content-center align-items-center">
-<form action="{% url 'playlist_create' %}" method="post">
-    {% csrf_token %}
-    {#{{ form|crispy }}#}
-    {{form.media}}
-    {% for f in form %}
-    <div class="mb-3">
-        <label for="disabledTextInput" class="form-label">{{f.label}}</label>
-        <div class="form-control">{{f}}</div>
+<div class="modal fade" id="PlaylistModal" tabindex="-1" role="dialog" aria-labelledby="PlaylistModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="PlaylistModalLabel">Add Playlist</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-    <br>
-    {% endfor %}
-    <br>
-    <input class="btn btn-primary" type="submit">
-</form>
+      <div class="modal-body">
+        <form method="post" action="{% url 'playlist_create' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock %}

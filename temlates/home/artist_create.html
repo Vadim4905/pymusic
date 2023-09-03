@@ -4,10 +4,11 @@
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center">
-<form action="{% url 'artist_create' %}" method="post">
+<form action="{% url 'artist_create' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {#{{ form|crispy }}#}
     {{form.media}}
+    {#{{form.as_p}}#}
     {% for f in form %}
     <div class="mb-3">
         <label for="disabledTextInput" class="form-label">{{f.label}}</label>
