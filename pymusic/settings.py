@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     #third parties
     'braces',
     # local
+    'track_scraping',
     'users',
     'home',
 ]

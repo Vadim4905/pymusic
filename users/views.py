@@ -4,15 +4,17 @@ from home import models,forms
 
 from .forms import  CustomUserCreationForm
 
-from django.views.generic import CreateView, View
+from django.views.generic import CreateView, View ,DetailView, ListView
 from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth import login, logout
 from django.http import HttpResponse
-from django.views.generic import ListView, CreateView,DetailView
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+
+from home.views import GroupRequiredMixin
 from pymusic import settings
 import smtplib
 import ssl
@@ -33,16 +35,28 @@ class CustomLoginView(LoginView):
     template_name = "users/login.html"
     form_class = AuthenticationForm
 
-class ProfileView(DetailView):
+class UserView(GroupRequiredMixin,DetailView):
     template_name = 'users/profile.html'
     model = get_user_model()
+    group_required = 'admin'
 
     def get_context_data(self,*args,**kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Profile'
-        if self.request.user.is_authenticated:
-            context['user_playlists'] = models.Playlist.objects.filter(user=self.request.user)
+        context['user_playlists'] = models.Playlist.objects.filter(user=self.request.user)
         return context
+
+class ProfileView(LoginRequiredMixin,View):
+    def get(self, request):
+        return render(
+            request,
+            "users/profile.html",
+            {
+                "title": "Profile",
+                "user": self.request.user,
+                'user_playlists': models.Playlist.objects.filter(user=self.request.user)
+            },
+        )
 
 
 

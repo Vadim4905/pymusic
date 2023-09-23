@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 # from braces.views import GroupRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 class GroupRequiredMixin(UserPassesTestMixin):
     group_required = None  # List of group names
@@ -128,6 +129,7 @@ class PlaylistCreateView(LoginRequiredMixin,CreateView):
         playlist.save()
         return HttpResponseRedirect(self.request.META.get('HTTP_REFERER', '/default/url/'))
 
+@login_required
 def add_music_to_playlist(request, music_id, playlist_id):
     music = get_object_or_404(models.Music, pk=music_id)
     playlist = get_object_or_404(models.Playlist, pk=playlist_id)
@@ -138,6 +140,7 @@ def add_music_to_playlist(request, music_id, playlist_id):
     messages.success(request, f'Added {music.name} to {playlist.name}!')
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/default/url/'))
 
+@login_required    
 def remove_music_from_playlist(request, music_id, playlist_id):
     music = get_object_or_404(models.Music, pk=music_id)
     playlist = get_object_or_404(models.Playlist, pk=playlist_id)
