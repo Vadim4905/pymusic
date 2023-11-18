@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("home.urls")),
     path('users/', include("users.urls")),
+    path('api/', include("api.urls")),
     path('', include("track_scraping.urls")),
 ]
 

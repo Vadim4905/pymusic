@@ -1,0 +1,20 @@
+{% include "home/base.html"%}
+
+
+{% block content %}
+
+<div class="container text-center">
+
+{{music.name}}
+<br>
+<audio controls>
+    <source src="{{ music.track.url }}" type="audio/mpeg">
+</audio>
+<br>
+<br>
+<!-- <h1>{{music.lyrics}}</h1> -->
+
+
+</div>
+
+{% endblock %}

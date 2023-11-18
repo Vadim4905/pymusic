@@ -1,17 +1,27 @@
 {% include 'home/base.html' %}
 
 {% block content %}
+
+
 <div class="container d-flex justify-content-center align-items-center">
 <form action="{% url 'login' %}" method="post">
     {% csrf_token %}
     {#{{ form.as_p }}#}
+    {% for field, errors in form.errors.items %}
+    {% for error in errors %}
+        <li> {{ error }}</li>
+    {% endfor %}
+{% endfor %}
+    
     {% for f in form %}
     <div class="mb-3">
-        <label for="disabledTextInput" class="form-label">{{f.label}}</label>
-        <div class="form-control">{{f}}</div>
+        <label for="disabledTextInput" class="form-label">{{f.label}}</label><br>
+        {{f}}
+        <label for="disabledTextInput" class="form-label">{{ f.errors|first }}</label>
       </div>
     <br>
     {% endfor %}
+    
     <br>
     <input class="btn btn-primary" type="submit">
 </form>

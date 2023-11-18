@@ -1,7 +1,12 @@
-{% include "home/base.html"%}
+{% extends "home/base.html" %}
 {% load static %}
+
+
+{% block title %}Index pymusic{% endblock %}
     
 {% block content %}
+
+
 
 
 <h1>All musics</h1>
@@ -14,7 +19,8 @@
 {% include 'home/playlist_create.html' %}
 
 
-    <!-- <table class="table">
+
+    <table class="table">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -35,7 +41,7 @@
                 </audio>
                
                 
-                {{music.name}} 
+                <a href='{% url "music_detail" music.pk %}'>{{music.name}} </a>
 
                 
                
@@ -43,7 +49,7 @@
             </td>
             <td><a href="{% url 'artist_detail' music.artist.pk %}">{{music.artist.name}}</a></td>
             <td><a href="{% url 'album_detail' music.album.pk %}" >{{music.album.name}}</a></td>
-            <td>{{music.created.year}}</td>
+            <td>{{music.album.year}}</td>
             <td>
 
             <div class="dropdown">
@@ -68,9 +74,9 @@
           </tr>
           {% endfor %}
         </tbody>
-      </table> -->
+      </table>
       
-      <div class="container">
+      <!-- <div class="container">
         <div class="column add-bottom">
             <div id="mainwrap">
                 <div id="nowPlay">
@@ -88,14 +94,11 @@
                     <ul id="plList"></ul>
                 </div>
             </div>
-        </div>
-        <div class="column add-bottom center">
-            <p>Music by <a href="http://www.mythium.net/">Mythium</a></p>
-            <p>Download: <a href="https://archive.org/download/mythium/mythium_vbr_mp3.zip">zip</a> / <a href="https://archive.org/download/mythium/mythium_archive.torrent">torrent</a></p>
-        </div>
+        </div> -->
+
     </div>
 
-    <script src="{% static 'home/js/script.js' %}"></script>
+  
 
 
     {% endblock %}

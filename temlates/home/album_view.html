@@ -5,6 +5,7 @@
 {% block content %}
 
 <h1>{{album.name}} by <a href='{% url "artist_detail" album.artist.pk %}' >{{album.artist.name}}</a></h1>
+<h2><a href='{% url "download_album" album.pk %}'> Download whole album </a> </h2>
 <br>
 
 {% if request.user|has_group:"admin" %}
@@ -30,9 +31,9 @@
             <audio controls>
                 <source src="{{ music.track.url }}" type="audio/mpeg">
             </audio>
-            {{music.name}}
+            <a href='{% url "music_detail" music.pk %}'>{{music.name}} </a>
         </td>
-        <td>{{music.created.year}}</td>
+        <td>{{music.album.year}}</td>
 
         <td>
         <div class="dropdown">

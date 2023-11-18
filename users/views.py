@@ -12,12 +12,16 @@ from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.contrib import messages
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from django.contrib.auth.models import  Group
 
 from home.views import GroupRequiredMixin
 from pymusic import settings
 import smtplib
 import ssl
+
 
 
 
@@ -34,6 +38,7 @@ class RegisterView(CreateView):
 class CustomLoginView(LoginView):
     template_name = "users/login.html"
     form_class = AuthenticationForm
+
 
 class UserView(GroupRequiredMixin,DetailView):
     template_name = 'users/profile.html'
@@ -62,7 +67,11 @@ class ProfileView(LoginRequiredMixin,View):
 
 
 
-
+@receiver(post_save, sender=get_user_model())
+def assign_to_group(sender, instance, created, **kwargs):
+    if created:
+        group = Group.objects.get(name='visitor')
+        instance.groups.add(group)
 
 
 # class SendEmail(View):

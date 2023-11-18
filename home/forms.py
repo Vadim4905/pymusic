@@ -9,15 +9,10 @@ class MusicForm(ModelForm):
         model = models.Music
         fields = (
             "name",
-            "artist",
-            'album',
-            'created',
             'track',
+            'lyrics',
+            'viewCount',
         )
-        widgets={
-            "created": AdminDateWidget()
-
-        }
 
 class ArtistForm(ModelForm):
 
@@ -26,21 +21,9 @@ class ArtistForm(ModelForm):
         fields = (
             "name",
             "photo",
+            'description',
         )
 
-
-class MusicForm(ModelForm):
-
-    class Meta:
-        model = models.Music
-        fields = (
-            "name",
-            'track',
-            'created',
-        )
-        widgets={
-            "created": AdminDateWidget()
-        }
 
 class AlbumForm(ModelForm):
 
@@ -49,8 +32,16 @@ class AlbumForm(ModelForm):
         fields = (
             "name",
             'cover',
-            
+            'year',
+            'duration',
+            'trackCount',
+            'duration_seconds',
+            'description',
         )
+        widgets={
+            "year": AdminDateWidget()
+
+        }
 
 class PLaylistForm(ModelForm):
 

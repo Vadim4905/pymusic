@@ -6,6 +6,7 @@
 
 {% for playlist in user_playlists %}
     <a href="{% url 'playlist_detail' playlist.pk  %}" >{{playlist}}</a>
+    <br>
 {% endfor %}
 
 {% endblock %}

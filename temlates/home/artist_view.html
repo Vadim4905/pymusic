@@ -5,6 +5,7 @@
 {% block content %}
 
 <h1>{{artist.name}}</h1>
+<h2><a href='{% url "download_artist" artist.pk %}'> Download all artist's songs</a></h2>
 <br>
 
 {% if request.user|has_group:"admin" %}
@@ -13,8 +14,11 @@
 </a>
 {% endif %}
 
-<div class="container d-flex justify-content-center align-items-center">
+
+
+<!-- <div class="container d-flex justify-content-center align-items-center">
 {% for album in albums %}
+
 
 <div class="card" style="width: 18rem;">
     <img src="{{album.cover.url}}" class="card-img-top" alt="...">
@@ -24,8 +28,31 @@
     </div>
   </div>
 
+
 {% endfor %}
 
+</div> -->
+
+
+
+<div class="container text-center">
+  <div class="row row-cols-4">
+    {% for album in albums %}
+    <div class="col">
+
+      <div class="card" style="width: 18rem;">
+        <img src="{{album.cover.url}}" class="card-img-top" alt="...">
+        <a href="{% url 'album_detail' album.pk %}" ></a>
+        <div class="card-body">
+          <p class="card-text"><a href="{% url 'album_detail' album.pk %}" >{{album.name}}</a></p>
+        </div>
+
+      </div>
+
+    </div>
+
+    {% endfor %}
+  </div>
 </div>
 
 {% endblock %}

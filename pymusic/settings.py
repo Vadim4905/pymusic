@@ -41,11 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #third parties
+    'rest_framework',
     'braces',
+    'django_celery_results',
+    'celery_progress',
+    'celery',
     # local
     'track_scraping',
     'users',
     'home',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -146,3 +151,21 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 AUTH_USER_MODEL = 'users.CustomUser' 
 
 LOGIN_URL = 'login' #redirect if user is not autentincated  for @login_required() 
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+}
+
+
+CSRF_TRUSTED_ORIGINS = ['https://pymusic.thtrfhrfth.repl.co']
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
+# celery -A pymusic worker --pool=eventlet
+# celery -A pymusic worker -l info
+# celery -A pymusic worker --pool=solo -l info
+# redis-server

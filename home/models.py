@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 import uuid
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-
+import os
 from datetime import date
 
 # Create your models here.
@@ -15,6 +15,7 @@ class Artist(models.Model):
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     name = models.CharField(max_length=50)
     photo = models.ImageField(upload_to='photos')
+    description = models.TextField()
 
     def __str__(self):
         return self.name
@@ -24,20 +25,30 @@ class Album(models.Model):
     name = models.CharField(max_length=50)
     artist = models.ForeignKey(Artist,on_delete=models.CASCADE) 
     cover = models.ImageField(upload_to='photos')
+    year = models.IntegerField()
+    duration = models.CharField(max_length=50)
+    trackCount = models.IntegerField()
+    duration_seconds = models.IntegerField()
+    description = models.TextField()
 
     def __str__(self):
         return self.name
-        
+
+
+def upload_to(instance, filename):
+    return os.path.join('audios', instance.artist.name, instance.album.name, filename)  
 
 class Music(models.Model):
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
     name = models.CharField(max_length=50)
     artist = models.ForeignKey(Artist,on_delete=models.CASCADE) 
     album = models.ForeignKey(Album,on_delete=models.CASCADE) 
-    created = models.DateField()
-    track = models.FileField(upload_to='audios/')
+    track = models.FileField(upload_to=upload_to)
+    lyrics = models.TextField()
+    viewCount = models.IntegerField()
     # publick = publick or private
-    # playlist_item = models.ForeignKey(Playlist,on_delete=models.CASCADE) 
+    class Meta:
+        ordering = ['-viewCount']
     
     def __str__(self):
         return self.name

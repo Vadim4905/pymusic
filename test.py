@@ -1,30 +1,37 @@
-import yt_dlp as ydlp
-import asyncio
+import os
+import shutil
+import tempfile
+from zipfile import ZipFile
 
-def download_video(url, options=None):
-    with ydlp.YoutubeDL(options) as ydl:
-        ydl.download([url])
 
-async def download_video_async(url, options=None):
-    loop = asyncio.get_running_loop()
-    await loop.run_in_executor(None, download_video, url, options)
+temp_dir = tempfile.mkdtemp()
 
-async def main():
-    # Set the options for yt-dlp. These are optional and can be customized.
-    options = {
-        # 'format': 'bestaudio/best',
-        'outtmpl': f'%(title)s.%(ext)s',
-        # Add other options as needed.
-    }
 
-    # List of URLs to download
-    urls = [
-        'https://www.youtube.com/watch?v=mGrJml5nq0o',
-        # Add more URLs as needed.
-    ]
+def get_all_file_paths(directory): 
+  
+    # initializing empty file paths list 
+    file_paths = [] 
+  
+    # crawling through directory and subdirectories 
+    for root, directories, files in os.walk(directory): 
+        # print(root)
+        for filename in files: 
+            # join the two strings in order to form the full filepath. 
+            filepath = os.path.join(root, filename) 
+            file_paths.append(filepath) 
+  
+    # returning all file paths 
+    return file_paths
 
-    # Use asyncio to run the download tasks concurrently
-    await asyncio.gather(*(download_video_async(url, options) for url in urls))
+zip_filename = "archive.zip"
+zip_filepath = os.path.join(temp_dir, zip_filename)
 
-if __name__ == '__main__':
-    asyncio.run(main())
+file_paths = get_all_file_paths('users')
+print(file_paths)
+
+with ZipFile(zip_filename, 'w') as zipf:
+    for file in file_paths: 
+        filename = file.rsplit("\\",1)[1]
+        zipf.write(file,filename) 
+
+shutil.rmtree(temp_dir)

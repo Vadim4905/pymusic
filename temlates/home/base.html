@@ -4,9 +4,104 @@
 <html lang="en">
 <head>
 
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script>
+
+var tracksList;
+function makeRequest() {
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', "{% url 'list' %}", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                resolve(JSON.parse(xhr.responseText));
+            } else if (xhr.readyState == 4) {
+                reject(xhr.status);
+            }
+        };
+        xhr.send();
+    });
+}
+
+makeRequest().then(response => {
+    console.log("Data received:", response);
+    tracksList = response;
+    // More code here...
+}).catch(error => {
+    console.error("Request failed:", error);
+});
+
+
+
+
+var xhr = new XMLHttpRequest();
+var tracksList;
+xhr.open('GET', "{% url 'list' %}", true);
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == 4 && xhr.status == 200) {
+    var data = JSON.parse(xhr.responseText);
+    tracksList = data;
+    console.log(tracksList);
+  } else if (xhr.readyState == 4) {
+    console.error('Ошибка:', xhr.status);
+  }
+};
+xhr.send();
+
+
+
+{% if request.user.is_authenticated %}
+fetch("{% url 'user_playlists'  %}")
+  .then(response => response.json())
+  .then(data => {
+    playlist = data;   
+      console.log(playlist) 
+  });
+{% endif %}
+
+  var buildPlaylist = $.each(tracksList, function(key, value) {
+                console.log(value.name);
+                var trackNumber = 1,
+                    trackName = value.name,
+                    trackDuration = 5,
+                    playlists = [];
+                if (trackNumber.toString().length === 1) {
+                    trackNumber = '0' + trackNumber;
+                }
+                $('#plList').append('<li> \
+                    <div class="plItem"> \
+                        <span class="plNum">' + trackNumber + '.</span> \
+                        <span class="plTitle">' + trackName + '</span> \
+                        <span class="plLength">' + trackDuration + '</span> \
+                        <div class="dropdown"> \
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"> \
+                            ... \
+                        </button> \
+                        <ul class="dropdown-menu"> \
+                            <li><a class="dropdown-item" href="#">Action</a></li> \
+                            <li><a class="dropdown-item" href="#">Another action</a></li> \
+                            <li><a class="dropdown-item" href="#">Something else here</a></li> \
+                        </ul> \
+                        </div> \
+                    </div> \
+                </li>');
+            });
+
+  
+  </script>
+
+
+
   
     <meta charset="UTF-8">
-    {% block title %}{% endblock %}
+    <title>{% block title %}Базовый заголовок{% endblock %}</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<link rel='stylesheet' href='https://cdn.plyr.io/3.6.2/plyr.css'>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+
 
 
     <!-- Metro UI -->
@@ -25,9 +120,9 @@
     <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
     <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}"> -->
 
-    <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+     <!-- <link rel="stylesheet" href="{% static 'home/css/style.css' %}">  -->
     
-
+  <!-- boostrap popup -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
@@ -96,9 +191,16 @@
         </div>
       </nav>
  
+  
+
     {% block content %}
     {% endblock  %}
     
-    <script src="{% static 'home/js/script.js' %}"></script>
+ 
+    
+    <!-- <script src="{% static 'home/js/script.js' %}"></script> -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js'></script>
+  <script src='//cdnjs.cloudflare.com/ajax/libs/html5media/1.1.8/html5media.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/plyr/3.6.8/plyr.min.js'></script>
 </body>
 </html>
