@@ -34,6 +34,7 @@ X_FRAME_OPTIONS = '*'
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -46,6 +47,8 @@ INSTALLED_APPS = [
     'django_celery_results',
     'celery_progress',
     'celery',
+    'crispy_forms',
+    'crispy_bootstrap4',
     # local
     'track_scraping',
     'users',
@@ -82,6 +85,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'pymusic.wsgi.application'
+ASGI_APPLICATION = 'pymusic.asgi.application'
 
 
 # Database
@@ -159,13 +163,32 @@ REST_FRAMEWORK = {
 }
 
 
-CSRF_TRUSTED_ORIGINS = ['https://pymusic.thtrfhrfth.repl.co']
+CSRF_TRUSTED_ORIGINS = ['https://75ec3f63-dfeb-4186-ad01-2bdb6f58c8e9-00-1tkwr35yyr6eo.janeway.replit.dev']
+
+REDIS_URL='redis://0.0.0.0:6379/'
+REDIS_HOST='127.0.0.1'
+REDIS_PORT=6379
+REDIS_DB=0
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
+
+
+
+
 # celery -A pymusic worker --pool=eventlet
-# celery -A pymusic worker -l info
+# celery -A pymusic worker -l info    does not on windows yet
 # celery -A pymusic worker --pool=solo -l info
 # redis-server

@@ -1,52 +1,36 @@
-{% include "home/base.html"%}
+{% extends "base.html"%}
 
 {% load group_check %}
+
+{% block title %}Artist {{artist.name}}{% endblock %}
 
 {% block content %}
 
 <h1>{{artist.name}}</h1>
-<h2><a href='{% url "download_artist" artist.pk %}'> Download all artist's songs</a></h2>
+<h2><a href='{% url "download_archive" "artist" artist.pk %}'> Download all artist's songs</a></h2>
 <br>
 
 {% if request.user|has_group:"admin" %}
-<a class="btn btn-primary" href='{% url "album_create" pk=artist.pk %}'>
+<a class="btn btn-primary" href='{% url "album-create" pk=artist.pk %}'>
   Add new album
 </a>
 {% endif %}
 
 
 
-<!-- <div class="container d-flex justify-content-center align-items-center">
-{% for album in albums %}
 
 
-<div class="card" style="width: 18rem;">
-    <img src="{{album.cover.url}}" class="card-img-top" alt="...">
-    <a href="{% url 'album_detail' album.pk %}" ></a>
-    <div class="card-body">
-      <p class="card-text"><a href="{% url 'album_detail' album.pk %}" >{{album.name}}</a></p>
-    </div>
-  </div>
-
-
-{% endfor %}
-
-</div> -->
-
-
-
-<div class="container text-center">
+<div class="container text-center"> 
   <div class="row row-cols-4">
-    {% for album in albums %}
+    {% for album in artist.albums.all %}
     <div class="col">
 
       <div class="card" style="width: 18rem;">
         <img src="{{album.cover.url}}" class="card-img-top" alt="...">
-        <a href="{% url 'album_detail' album.pk %}" ></a>
+        <a href="{% url 'album-detail' album.pk %}" ></a>
         <div class="card-body">
-          <p class="card-text"><a href="{% url 'album_detail' album.pk %}" >{{album.name}}</a></p>
+          <p class="card-text"><a href="{% url 'album-detail' album.pk %}" >{{album.name}}</a></p>
         </div>
-
       </div>
 
     </div>

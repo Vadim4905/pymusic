@@ -1,18 +1,22 @@
-{% include 'home/base.html' %}
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center">
 <form action="{% url 'register' %}" method="post">
     {% csrf_token %}
     {#{{ form.as_p }}#}
-    {% for f in form %}
+
+    {{ form|crispy }}
+    <!-- {% for f in form %}
     <div class="mb-3">
         <label for="disabledTextInput" class="form-label">{{f.label}}</label>
         <div class="form-control">{{f}}</div>
         <label for="disabledTextInput" class="form-label">{{ f.errors }}</label>
       </div>
     <br>
-    {% endfor %}
+    {% endfor %} -->
     <br>
     <input class="btn btn-primary" type="submit">
 </form>

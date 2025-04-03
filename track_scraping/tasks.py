@@ -1,31 +1,74 @@
 from celery import shared_task
-from time import sleep
+from celery.result import AsyncResult
+
 from ytmusicapi import YTMusic
 from home.models import Artist,Album,Music
 from django.core.files import File
+from channels.layers import get_channel_layer
 import requests
 from django.core.files.base import ContentFile
-from concurrent.futures import ThreadPoolExecutor
+
 import yt_dlp as ydlp
-from celery.result import AsyncResult
+
+from concurrent.futures import ThreadPoolExecutor,ProcessPoolExecutor 
+from time import sleep
 import os
+import asyncio
+import tempfile
+import shutil
+from asgiref.sync import async_to_sync
 
 
 
-def worker(self,id,progress):
-    s = 2**10000
+
+def worker(self,video_url):
+    options = {
+            'format': 'bestaudio/best',
+            'outtmpl':f'tracks/%(title)s.%(ext)s',  
+            'extractaudio': True,
+            'audioformat': 'mp3',
+            # 'proxy': 'http://43.167.164.59:13001',
+            # 'progress_hooks': [my_hook],
+        }
+    with ydlp.YoutubeDL(options) as ydl:
+        info_dict = ydl.extract_info(video_url, download=True)
+        video_title = info_dict.get('title', None)
+        ext =  info_dict.get('ext', None)
+        filename = ydl.prepare_filename(info_dict)
 
 
 @shared_task(bind=True)
 def my_long_task(self, total):
 
     # for i in range(total):
-    #     sleep(0.1)  # simulate some work
-    #     # Report progress
+    #     sleep(0.1)
     #     self.update_state(state='PROGRESS', meta={'progress': 100 * i / total})
 
 
-    task_args = [(self,self.request.id,i+1) for i in range(100)]
+    ytmusic = YTMusic()  
+    search_results = ytmusic.search('twenty one pilots', filter='artists')
+
+    artist = ytmusic.get_artist(search_results[0]['browseId'])
+
+    albums_id = artist['albums']['browseId']
+    if albums_id is None:
+        artist_albums = artist['albums']['results']
+    else:
+        params = artist['albums']['params']
+        artist_albums = ytmusic.get_artist_albums(albums_id,params)
+
+
+    urls = []
+
+    artist_albums = [ytmusic.get_album(album['browseId']) for album in artist_albums]
+    for album in artist_albums:
+        tracks = album['tracks']
+        for track in tracks:
+            video_id = track['videoId']                 
+            track_name = track['title']
+            urls.append(f"https://www.youtube.com/watch?v={video_id}")    
+            
+    task_args = [(self,url) for url in urls]
     with ThreadPoolExecutor(max_workers=25) as executor:
         futures = {executor.submit(worker, *args): args for args in task_args}
         for index, future in enumerate(futures):
@@ -49,10 +92,10 @@ def my_long_task(self, total):
 
 
 
-def download_track(video_id, artist_model,album_model,track_name,ytmusic):
+def download_track(video_id, artist_model,album_model,track_name,ytmusic,save_path):
         options = {
                     'format': 'bestaudio/best',
-                    'outtmpl': f'tracks/%(title)s.%(ext)s',  # путь для сохранения
+                    'outtmpl': f'{save_path}/%(title)s.%(ext)s',  
                     'extractaudio': True,
                     'audioformat': 'mp3',
                     # 'progress_hooks': [my_hook],
@@ -77,7 +120,7 @@ def download_track(video_id, artist_model,album_model,track_name,ytmusic):
                         name=track_name,
                         artist=artist_model,
                         album=album_model,
-                        track=File(f,name='track.mp3'),
+                        track=File(f,name=f'{track_name}.mp3'),
                         viewCount=viewCount,
                         lyrics = lyrics,
                         )
@@ -91,14 +134,20 @@ def download_track(video_id, artist_model,album_model,track_name,ytmusic):
 
 def execute_tasks(self,task_args,max_workers=25,max_retries=3,current_retry=0):
     retry_list = []
-    with ThreadPoolExecutor(max_workers=25) as executor:
+    channel_layer = get_channel_layer()
+    
+    with ThreadPoolExecutor(max_workers=15) as executor:
         futures = {executor.submit(download_track, *args): args for args in task_args}
         for index, future in enumerate(futures):
             initial_args = futures[future]
             try:
                 future.result()
                 progress = 100 * (index) / len(futures)
-                self.update_state(state='PROGRESS', meta={'progress':progress,'info':f'{index} of {len(futures)} downloaded' })
+                asyncio.run(channel_layer.group_send(
+                        self.request.id,
+                        {"state":'PROGRESS',"type": "send_progress", "progress": progress, 'info': f"{index} of {len(futures)} downloaded"}
+                    ))
+                # self.update_state(state='PROGRESS', meta={'progress':progress,'info':f'{index} of {len(futures)} downloaded' })
             except Exception as e:
                 print(e)
                 # time.sleep(5)
@@ -115,6 +164,16 @@ def execute_tasks(self,task_args,max_workers=25,max_retries=3,current_retry=0):
 
 @shared_task(bind=True)
 def scrape_artist(self,artist_name):
+    # channel_layer = get_channel_layer()
+    # task_id = self.request.id
+    # for i in range(1, 201):  # Simulating a long-running task
+    #     sleep(0.1)  # Simulate CPU load
+    #     asyncio.run(channel_layer.group_send(
+    #         task_id,
+    #         {"state":'PROGRESS',"type": "send_progress", "progress": i/200*100, 'info': f"{i} of 200 downloaded"}
+    #     ))
+    
+        
     with requests.Session() as session:
         ytmusic = YTMusic()  
         search_results = ytmusic.search(artist_name, filter='artists')
@@ -122,7 +181,12 @@ def scrape_artist(self,artist_name):
         artist = ytmusic.get_artist(search_results[0]['browseId'])
         artist_name = artist['name']
         artist_description = artist['description']
-        artist_photo_url = artist['thumbnails'][0]['url']            
+
+        if artist['thumbnails']:
+            artist_photo_url = artist['thumbnails'][0]['url']   
+            photo = ContentFile(session.get(url=artist_photo_url).content)
+        else:
+            photo = None
 
         albums_id = artist['albums']['browseId']
         if albums_id is None:
@@ -131,29 +195,28 @@ def scrape_artist(self,artist_name):
             params = artist['albums']['params']
             artist_albums = ytmusic.get_artist_albums(albums_id,params)
 
-
-
-        photo = ContentFile(session.get(url=artist_photo_url).content)
-
-
         artist_model = Artist(
                             name=artist_name,
                             photo=photo,
                             description=artist_description,
                             )
         artist_model.save()
-        artist_model.photo.save("myphoto.jpg", photo, save=True)
+        artist_model.photo.save(f"{artist_name}.jpg", photo, save=True)
         
         initial_tasks  = []
-        index = 0
 
+        save_path = tempfile.mkdtemp()
         artist_albums = [ytmusic.get_album(album['browseId']) for album in artist_albums]
-        total_tracks = sum([ len(album['tracks'])  for album in artist_albums])
+
         for album in artist_albums:
 
             album_photo_url = album['thumbnails'][len(album['thumbnails'])-1]['url']#get the highest resolution
 
             cover  = ContentFile(session.get(url=album_photo_url).content)
+            
+            description = album.get('description','')
+            if not description:
+                description = ""
             album_model = Album(
                                 name=album['title'],
                                 artist=artist_model,
@@ -162,23 +225,30 @@ def scrape_artist(self,artist_name):
                                 duration=album['duration'],
                                 trackCount=album['trackCount'],
                                 duration_seconds=album['duration_seconds'],
-                                description=album.get('description',''),
+                                description=description,
                                 )
             album_model.save()
-            album_model.cover.save("cover.jpg", cover, save=True)
+            album_model.cover.save(f"{album['title']}.jpg", cover, save=True)
 
         
             tracks = album['tracks']
             for track in tracks:
                 video_id = track['videoId']                 
                 track_name = track['title']
-                index += 1
-                progress = 100 * index / total_tracks
-                initial_tasks.append((video_id,artist_model,album_model, track_name,ytmusic))
+                initial_tasks.append((video_id,artist_model,album_model, track_name,ytmusic,save_path))
         result = execute_tasks(self,initial_tasks)
+        shutil.rmtree(save_path)
+        
+        channel_layer = get_channel_layer()
+        asyncio.run(channel_layer.group_send(
+            self.request.id,
+            {"state":'SUCCESS',"type": "send_progress", "progress": 100, 'info': "downloaded"}
+        ))
+        
         if result is not None:
             return result
-        return 'Task completed' 
+        return "Downloaded successfully"
+        
 
  
 

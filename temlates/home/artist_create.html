@@ -1,22 +1,25 @@
-{% include "home/base.html"%}
+{% extends "base.html"%}
 
+{% load crispy_forms_tags %}
 
+{% block title %}Create artist{% endblock %}
 
 {% block content %}
 <div class="container d-flex justify-content-center align-items-center">
-<form action="{% url 'artist_create' %}" method="post" enctype="multipart/form-data">
+<form action="{% url 'artist-create' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {#{{ form|crispy }}#}
+    {{ form|crispy }}
     {{form.media}}
     {#{{form.as_p}}#}
-    {% for f in form %}
+    <!-- {% for f in form %}
     <div class="mb-3">
         <label for="disabledTextInput" class="form-label">{{f.label}}</label>
         <div class="form-control">{{f}}</div>
         <label for="disabledTextInput" class="form-label">{{ f.errors }}</label>
       </div>
     <br>
-    {% endfor %}
+    {% endfor %} -->
     <br>
     <input class="btn btn-primary" type="submit">
 </form>

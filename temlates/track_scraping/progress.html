@@ -1,4 +1,4 @@
-{% include "home/base.html"%}
+{% extends "base.html"%}
 
 
 {% block content %}
@@ -16,7 +16,7 @@
 <script>
 
     function updateProgress(task_id) {
-    fetch(`/task_status/${task_id}/`)
+    fetch(`/task-status/${task_id}/`)
         .then(response => response.json())
         .then(data => {
             console.log(data);

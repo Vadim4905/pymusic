@@ -1,62 +1,15 @@
-{% include "home/base.html"%}
+{% extends "base.html"%}
 
     
+{% block title %}Search results{% endblock %}
+
 {% block content %}
 
 
 <h1>Result</h1>
 
 
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col"></th>
-            <th scope="col">artist</th>
-            <th scope="col">album</th>
-            <th scope="col">created</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-           {% for music in musics %} 
-          <tr>
-            <th scope="row">{{forloop.counter}}</th>
-            <td>
-                <audio controls>
-                    <source src="{{ music.track.url }}" type="audio/mpeg">
-                </audio>
-                {{music.name}} 
-                
-            </td>
-            <td><a href="{% url 'artist_detail' music.artist.pk %}">{{music.artist.name}}</a></td>
-            <td><a href="{% url 'album_detail' music.album.pk %}" >{{music.album.name}}</a></td>
-            <td>{{music.created.year}}</td>
-            <td>
-
-            <div class="dropdown">
-              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                ...
-              </button>
-              <ul class="dropdown-menu">
-
-                {% for playlist in user_playlists %} 
-
-                    {% if music in playlist.musics.all %}
-                      <li><a class="dropdown-item" href="{% url 'remove_music_from_playlist' music.pk  playlist.pk %}">Remove from {{playlist}}</a></li>
-                    {% else %}
-                      <li><a class="dropdown-item" href="{% url 'add_music_to_playlist' music.pk  playlist.pk %}">Add to {{playlist}}</a></li>
-                    {% endif %}
-
-                {% endfor %}
-              </ul>
-            </div>
-
-          </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+{% include 'audio_player.html' %}
 
 
 

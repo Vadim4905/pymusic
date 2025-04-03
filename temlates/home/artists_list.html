@@ -1,6 +1,8 @@
-{% include "home/base.html"%}
+{% extends "base.html"%}
 
 {% load group_check %}
+
+{% block title %}Artists{% endblock %}
 
 {% block content %}
 
@@ -8,24 +10,28 @@
 <br>
 
 {% if request.user|has_group:"admin" %}
-  <a class="btn btn-primary" href="{%url 'artist_create'%}">
+  <a class="btn btn-primary" href="{%url 'artist-create'%}">
     Add new artist
   </a>
 {% endif %}
 
-<div class="container d-flex justify-content-center align-items-center">
-{% for artist in artists %}
+<div class="container text-center">
+  <div class="row row-cols-4">
+    {% for artist in artists %}
 
-<div class="card" style="width: 18rem;">
-    <img src="{{artist.photo.url}}" class="card-img-top" alt="...">
-    <a href="{% url 'artist_detail' artist.pk %}" ></a>
-    <div class="card-body">
-      <p class="card-text"><a href="{% url 'artist_detail' artist.pk %}" >{{artist.name}}</a></p>
+    <div class="col">
+      <div class="card" style="width: 18rem;">
+          <img src="{{artist.photo.url}}" class="card-img-top" alt="...">
+          <a href="{% url 'artist-detail' artist.pk %}" ></a>
+          <div class="card-body">
+            <p class="card-text"><a href="{% url 'artist-detail' artist.pk %}" >{{artist.name}}</a></p>
+          </div>
+      </div>
     </div>
+
+    {% endfor %}
+
   </div>
-
-{% endfor %}
-
 </div>
 
 {% endblock %}

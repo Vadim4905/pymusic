@@ -38,10 +38,10 @@ class AlbumForm(ModelForm):
             'duration_seconds',
             'description',
         )
-        widgets={
-            "year": AdminDateWidget()
+        # widgets={
+        #     "year": AdminDateWidget()
 
-        }
+        # }
 
 class PLaylistForm(ModelForm):
 

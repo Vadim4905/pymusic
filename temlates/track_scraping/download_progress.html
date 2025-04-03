@@ -1,21 +1,45 @@
-{% include "home/base.html"%}
+{% extends "base.html"%}
 
 
 {% block content %}
 
 
 <h1>Downloading</h1>
+{% if task.result %}
+<h2 id='info'> Download completed</h2>
+{% else %}
 <h2 id='info'> Preparing files</h2>
+{% endif %}
+
 <div class="progress">
-    <div id ='progressbar' class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-label="Animated striped example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+    <div id ='progressbar' class="progress-bar progress-bar-striped progress-bar-animated   {% if task.result %}bg-success{% else %}bg-info{% endif %} " role="progressbar" aria-label="Animated striped example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: {% if task.result %}100{% else %}0{% endif %}%"></div>
 </div>
+
+
 
 
 
 <script>
 
+    const ProgressSocket = new WebSocket( 'ws://' + window.location.host +'/ws/progress_bar/' + '{{task.id}}' + '/');
+
+    ProgressSocket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        console.log(data);
+        document.getElementById('progressbar').style.width = data.progress + "%";
+        document.getElementById('info').textContent  = data.info;
+        if ( data.state ===  'SUCCESS') {
+                document.getElementById('progressbar').style.width = '100%';
+
+                document.getElementById('progressbar').classList.remove("bg-info");
+                document.getElementById('progressbar').classList.add("bg-success");
+
+                document.getElementById('info').textContent  = 'Download completed'
+            };   
+    };
+
     function updateProgress(task_id) {
-    fetch(`/task_status/${task_id}/`)
+    fetch(`/task-status/${task_id}/`)
         .then(response => response.json())
         .then(data => {
             console.log(data.state);
@@ -37,7 +61,7 @@
         });
 }
 
-updateProgress('{{task_id}}');
+//updateProgress('{{task_id}}');
 
 </script>
 

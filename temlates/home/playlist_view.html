@@ -1,9 +1,10 @@
-{% include 'home/base.html' %}
+{% extends 'base.html' %}
 
+{% block title %}Playlist playlist.name{% endblock %}
 
 {% block content %}
 <h1>{{playlist.name}}</h1>
-<h2><a href='{% url "download_playlist" playlist.pk %}'> Download whole playlist </a> </h2>
+<h2><a href='{% url "download_archive" "playlist" playlist.pk %}'> Download whole playlist </a> </h2>
 
 <table class="table">
     <thead>
@@ -22,7 +23,7 @@
             <audio controls>
                 <source src="{{ music.track.url }}" type="audio/mpeg">
             </audio>
-            <a href='{% url "music_detail" music.pk %}'>{{music.name}} </a>
+            <a href='{% url "music-detail" music.pk %}'>{{music.name}} </a>
         </td>
         <td>{{music.album.year}}</td>
         
@@ -33,7 +34,7 @@
             ...
         </button>   
         <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'remove_music_from_playlist' music.pk  playlist.pk %}">Remove</a></li>
+            <li><a class="dropdown-item" href="{% url 'remove-music-from-playlist' music.pk  playlist.pk %}">Remove</a></li>
         </ul>
         </div>
 

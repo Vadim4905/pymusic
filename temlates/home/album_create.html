@@ -1,22 +1,33 @@
-{% include "home/base.html" %}
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
 
+{% load static %}
+{% block title %}Create album{% endblock %}
 
+{static
 
 {% block content %}
+
+    <!-- <script src="{% url 'js-catlog' %}"></script>
+    <script src="{% static '/admin/js/core.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'admin/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/widgets.css' %}"> -->
+
+
 <div class="container d-flex justify-content-center align-items-center">
 <form action='' method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {#{{ form|crispy }}#}
-    {{form.media}}
+    {{ form|crispy }}
+    <!-- {{form.media}} -->
     <!-- {{ form.as_p }} -->
-    {% for f in form %}
+    <!-- {% for f in form %}
     <div class="mb-3">
         <label for="disabledTextInput" class="form-label">{{f.label}}</label>
         <div class="form-control">{{f}}</div>
         <label for="disabledTextInput" class="form-label">{{ f.errors }}</label>
       </div>
     <br>
-    {% endfor %}
+    {% endfor %} -->
     <br>
     <input class="btn btn-primary" type="submit">
 </form>

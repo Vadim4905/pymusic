@@ -4,7 +4,7 @@ from home import models,forms
 
 from .forms import  CustomUserCreationForm
 
-from django.views.generic import CreateView, View ,DetailView, ListView
+from django.views.generic import CreateView, View ,DetailView, ListView,TemplateView
 from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth.forms import UserCreationForm,AuthenticationForm
 from django.contrib.auth import login, logout
@@ -35,6 +35,7 @@ class RegisterView(CreateView):
         return redirect("/")
 
 
+
 class CustomLoginView(LoginView):
     template_name = "users/login.html"
     form_class = AuthenticationForm
@@ -45,26 +46,8 @@ class UserView(GroupRequiredMixin,DetailView):
     model = get_user_model()
     group_required = 'admin'
 
-    def get_context_data(self,*args,**kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Profile'
-        context['user_playlists'] = models.Playlist.objects.filter(user=self.request.user)
-        return context
-
-class ProfileView(LoginRequiredMixin,View):
-    def get(self, request):
-        return render(
-            request,
-            "users/profile.html",
-            {
-                "title": "Profile",
-                "user": self.request.user,
-                'user_playlists': models.Playlist.objects.filter(user=self.request.user)
-            },
-        )
-
-
-
+class ProfileView(LoginRequiredMixin,TemplateView):
+    template_name = 'users/profile.html'
 
 
 @receiver(post_save, sender=get_user_model())

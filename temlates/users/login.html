@@ -1,26 +1,25 @@
-{% include 'home/base.html' %}
+{% extends 'base.html' %}
 
+{% load crispy_forms_tags %}
 {% block content %}
 
 
 <div class="container d-flex justify-content-center align-items-center">
 <form action="{% url 'login' %}" method="post">
     {% csrf_token %}
-    {#{{ form.as_p }}#}
-    {% for field, errors in form.errors.items %}
-    {% for error in errors %}
-        <li> {{ error }}</li>
-    {% endfor %}
-{% endfor %}
+
+
+    {{ form|crispy }}
+    {{form.media}}
     
-    {% for f in form %}
+    <!-- {% for f in form %}
     <div class="mb-3">
         <label for="disabledTextInput" class="form-label">{{f.label}}</label><br>
         {{f}}
         <label for="disabledTextInput" class="form-label">{{ f.errors|first }}</label>
       </div>
     <br>
-    {% endfor %}
+    {% endfor %} -->
     
     <br>
     <input class="btn btn-primary" type="submit">
