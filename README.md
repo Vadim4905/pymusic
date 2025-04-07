@@ -11,7 +11,7 @@ pip install requirements.txt
 ```
 
 ```bash
-python manage.py makemigrations
+python manage.py migrate
 ```
 ```bash
 python manage.py createsuperuser
